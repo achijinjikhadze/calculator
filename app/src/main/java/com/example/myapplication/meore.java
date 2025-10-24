@@ -9,9 +9,14 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+
 
 public class meore extends AppCompatActivity {
 
@@ -137,7 +142,7 @@ public class meore extends AppCompatActivity {
                 if (lastc>='0' && lastc<='9'){
                     try {
                         Editable editable = editText.getText();
-                        editable.insert(curspos, "X");
+                        editable.insert(curspos, "*");
                         editable.setSpan(
                                 new ForegroundColorSpan(Color.RED),
                                 curspos,
@@ -204,7 +209,7 @@ public class meore extends AppCompatActivity {
         btnw.setOnClickListener(v -> {
             String s = editText.getText().toString();
             int curspos = editText.getSelectionStart();
-
+            int textsz = s.length();
 
             int lastop = Math.max(
                     Math.max(s.lastIndexOf('+',curspos-1), s.lastIndexOf('-',curspos-1)),
@@ -212,10 +217,10 @@ public class meore extends AppCompatActivity {
             );
 
             String num = s.substring(lastop+1, curspos);
-            if (s.length() > 0) {
-                char lastc = s.charAt(curspos > 0 ? curspos - 1 : 0);
+            if (s.length()>0) {
+                char lastc=s.charAt(textsz-1);
 
-                 if (!num.contains(".") && ((lastc >= '0' && lastc <= '9') /*|| lastc == '+' || lastc == '-' || lastc == 'X' || lastc == '/'*/)) {
+                 if (!num.contains(".") && ((lastc>='0' && lastc<='9') /*|| lastc == '+' || lastc == '-' || lastc == 'X' || lastc == '/'*/)) {
                     editText.getText().insert(curspos, btnw.getText());
                 }
             } else {
@@ -225,12 +230,36 @@ public class meore extends AppCompatActivity {
         });
 
 
-        //=udris
+
+        //=tolia
         btntl.setOnClickListener(v -> {
-            String expr = editText.getText().toString();
+            String s = editText.getText().toString().trim();
+            int curspos = editText.getSelectionStart();
+
+            int textsz = s.length();
+            if (textsz > 0) {
+                char lastc = s.charAt(textsz-1);
+                if (lastc>='0' && lastc<='9') {
+                    Context rhino = Context.enter();
+                    rhino.setOptimizationLevel(-1);
+                    try {
+                        Scriptable scope = rhino.initStandardObjects();
+                        Object result = rhino.evaluateString(scope, s, "JavaScript", 1, null);
+                        editText.setText(result.toString());
+                        editText.setSelection(editText.getText().length());
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+           else {
+                Toast.makeText(this, "ჩაწერე გამოსახულება", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
 
         });
+
 
 
 
@@ -239,3 +268,4 @@ public class meore extends AppCompatActivity {
 
 
 }
+

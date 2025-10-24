@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-
+    implementation("org.mozilla:rhino:1.7.14")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
