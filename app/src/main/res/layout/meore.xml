@@ -146,7 +146,6 @@
         android:gravity="center"
         >
 
-
         <Button
             android:layout_margin="3dp"
             android:layout_width="70dp"
